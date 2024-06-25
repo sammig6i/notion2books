@@ -11,6 +11,8 @@ client_id = os.getenv('QUICKBOOKS_CLIENT_ID')
 client_secret = os.getenv('QUICKBOOKS_CLIENT_SECRET')
 redirect_uri = os.getenv('REDIRECT_URI') 
 company_id = os.getenv('QUICKBOOKS_COMPANY_ID')
+notion_api_key = os.getenv('NOTION_API_KEY')
+notion_database_id = os.getenv('NOTION_DATABASE_ID')
 
 app = Flask(__name__)
 app.secret_key = os.urandom(12)
@@ -50,7 +52,7 @@ def callback():
         return jsonify({"error": str(e)}), 500
       
 
-# TODO: function for access and refresh tokens with auth code as input
+# TODO: function to retrive access and refresh tokens with input: auth code
 # TODO: function to refresh tokens once they expire (handle 401 status code error)
 
 if __name__ == '__main__':
