@@ -21,25 +21,29 @@ def home():
 
 @app.route('/callback')
 def callback():
-    try:
-      auth_code = request.args.get('code')
-      token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
-      auth = HTTPBasicAuth(client_id, client_secret)
-      headers = {"Accept": "application/json"}
-      data = {
-          "grant_type": "authorization_code",
-          "code": auth_code,
-          "redirect_uri": redirect_uri
-      }
+    auth_code = request.args.get('code')
+    token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+    auth = HTTPBasicAuth(client_id, client_secret)
+    headers = {"Accept": "application/json"}
+    data = {
+        "grant_type": "authorization_code",
+        "code": auth_code,
+        "redirect_uri": redirect_uri
+    }
 
-      response = requests.post(token_url, auth=auth, headers=headers, data=data)
-      tokens = response.json()
-      access_token = tokens["access_token"]
-      refresh_token = tokens["refresh_token"]
+    response = requests.post(token_url, auth=auth, headers=headers, data=data)
+    tokens = response.json()
+    access_token = tokens["access_token"]
+    refresh_token = tokens["refresh_token"]
+
+    if 'access_token' in tokens and 'refresh_token' in tokens:
+        access_token = tokens["access_token"]
+        refresh_token = tokens["refresh_token"]
+        return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
+    else:
+        return jsonify({"error": tokens})
+    
       
-      return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 # TODO: function for access and refresh tokens with auth code as input
 # TODO: function to refresh tokens once they expire (handle 401 status code error)
