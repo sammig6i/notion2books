@@ -8,9 +8,11 @@ load_dotenv()
 
 client_id = os.getenv('QUICKBOOKS_CLIENT_ID')
 client_secret = os.getenv('QUICKBOOKS_CLIENT_SECRET')
-redirect_uri = 'https://notion2books-f57fa00a266c.herokuapp.com/callback'  
+redirect_uri = os.getenv('REDIRECT_URI') 
+company_id = os.getenv('QUICKBOOKS_COMPANY_ID')
 
 app = Flask(__name__)
+app.secret_key = os.urandom(12)
 
 @app.route('/')
 def home():
@@ -35,6 +37,9 @@ def callback():
     refresh_token = tokens["refresh_token"]
     
     return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
+
+# TODO: function for access and refresh tokens with auth code as input
+# TODO: function to refresh tokens once they expire (handle 401 status code error)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
