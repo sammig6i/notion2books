@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "notion2books"
+version = "0.1.0"
+description = "Integration between QuickBooks and Notion"
+authors = ["Sammi Ghazzawi <swghazzawi@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+notion-client = "^2.2.1"
+python-dotenv = "^1.0.1"
+flask = "^3.0.3"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
