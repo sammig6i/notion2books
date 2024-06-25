@@ -20,7 +20,21 @@ def home():
 @app.route('/callback')
 def callback():
     auth_code = request.args.get('code')
-    return f'Authorization code: {auth_code}'
+    token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+    auth = HTTPBasicAuth(client_id, client_secret)
+    headers = {"Accept": "application/json"}
+    data = {
+        "grant_type": "authorization_code",
+        "code": auth_code,
+        "redirect_uri": redirect_uri
+    }
+
+    response = requests.post(token_url, auth=auth, headers=headers, data=data)
+    tokens = response.json()
+    access_token = tokens["access_token"]
+    refresh_token = tokens["refresh_token"]
+    
+    return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
