@@ -3,6 +3,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from flask import Flask, jsonify, request, redirect
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
@@ -21,32 +22,36 @@ def home():
 
 @app.route('/callback')
 def callback():
-    auth_code = request.args.get('code')
-    token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
-    auth = HTTPBasicAuth(client_id, client_secret)
-    headers = {"Accept": "application/json"}
-    data = {
-        "grant_type": "authorization_code",
-        "code": auth_code,
-        "redirect_uri": redirect_uri
-    }
+    try:
+        auth_code = request.args.get('code')
+        token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+        auth = HTTPBasicAuth(client_id, client_secret)
+        headers = {"Accept": "application/json"}
+        data = {
+            "grant_type": "authorization_code",
+            "code": auth_code,
+            "redirect_uri": redirect_uri
+        }
 
-    response = requests.post(token_url, auth=auth, headers=headers, data=data)
-    tokens = response.json()
-    access_token = tokens["access_token"]
-    refresh_token = tokens["refresh_token"]
+        response = requests.post(token_url, auth=auth, headers=headers, data=data)
+        tokens = response.json()
 
-    if 'access_token' in tokens and 'refresh_token' in tokens:
-        access_token = tokens["access_token"]
-        refresh_token = tokens["refresh_token"]
-        return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
-    else:
-        return jsonify({"error": tokens})
-    
+        # Ensure tokens are correctly parsed
+        if 'access_token' in tokens and 'refresh_token' in tokens:
+            access_token = tokens["access_token"]
+            refresh_token = tokens["refresh_token"]
+            return f'Access Token: {access_token}, Refresh Token: {refresh_token}'
+        else:
+            logging.error(f"Token error: {tokens}")
+            return jsonify({"error": tokens}), 500
+
+    except Exception as e:
+        logging.exception("An error occurred during the callback processing")
+        return jsonify({"error": str(e)}), 500
       
 
 # TODO: function for access and refresh tokens with auth code as input
 # TODO: function to refresh tokens once they expire (handle 401 status code error)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, debug=True)
